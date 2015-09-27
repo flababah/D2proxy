@@ -15,7 +15,7 @@ You either need to set your DNS server up such that it maps `europe.battle.net` 
 
 1. Press `Ctrl+R`
 2. Paste in `notepad C:\WINDOWS\system32\drivers\etc\hosts`
-3. Add `<proxy_ip> europe.battle.net` to the bottom of the file where `<proxy_ip>` it the proxy's IP.
+3. Add `<proxy_ip> europe.battle.net` to the bottom of the file where `<proxy_ip>` is the proxy's IP.
 
 If you run the proxy on the same machine as the game you need to note the IP of battle.net before modifying the `hosts` file. That IP should be passed as first argument to the proxy such that the proxy does not try to connect to itself.
 

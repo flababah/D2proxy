@@ -20,7 +20,8 @@ class IPRange(object):
 		self.base = self.to_num(ip)
 		self.mask = 1 << (32 - int(block))
 
-	def to_num(self, ip):
+	@staticmethod
+	def to_num(ip):
 		return reduce(lambda a, x: a << 8 | int(x), ip.split("."), 0)
 
 	def __contains__(self, item):
@@ -69,9 +70,9 @@ class D2Proxy(object):
 
 		# Return proxy's public IP if peer is public.
 		def proxy_ip(sock):
-			_, inner = self.socks[sock]
-			peer   = inner.getpeername()[0]
-			lan_ip = inner.getsockname()[0]
+			_, inner  = self.socks[sock]
+			peer, _   = inner.getpeername()
+			lan_ip, _ = inner.getsockname()
 			return socket.inet_aton(lan_ip if local_ip(peer) else self.public)
 
 		# SID_LOGONREALMEX - Redirect realm ip:port to proxy.
@@ -102,6 +103,10 @@ class D2Proxy(object):
 		self.listen("chat",  remote, chatp,  relay(), relay(redir_realm))
 		self.listen("realm", remote, realmp, relay(), relay(redir_game))
 		self.listen("game",  remote, gamep,  relay(), relay())
+
+	@staticmethod
+	def log(line):
+		print time.strftime("[%H:%M:%S] ", time.localtime()) + line
 
 	def new_socket(self, sock=None):
 		if sock is None:
@@ -139,9 +144,6 @@ class D2Proxy(object):
 
 		self.socks[sock] = on_accept, None
 		self.next_remote[kind] = addr, port
-
-	def log(self, line):
-		print time.strftime("[%H:%M:%S] ", time.localtime()) + line
 
 	def run(self):
 		self.log("Running...")
