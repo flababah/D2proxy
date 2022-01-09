@@ -55,7 +55,8 @@ class D2Proxy(object):
 				try:
 					data = sock.recv(0xffff)
 				except socket.error as ex:
-					if ex.errno == socket.errno.ECONNRESET:
+					if ex.errno in (socket.errno.ECONNRESET,
+					                socket.errno.ETIMEDOUT):
 						data = None
 					else:
 						raise
