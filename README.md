@@ -9,11 +9,34 @@ More information about the protocols is available at [bnetdocs.org](https://bnet
 
 ## Instructions
 
-    python2 d2proxy.py [battle.net address]
+#### Running the proxy
+Execute directly in terminal (requires Python 3):
+```
+python d2proxy.py
+```
 
-You either need to set your DNS server up such that it maps `europe.battle.net` to the proxy's IP, or some other domain if you are not playing on europe. Or you can simply modify the `hosts` file on the client computer:
+Or build and run as a docker container:
+```
+docker build -t d2proxy .
+docker run -d -p6112:6112 -p6113:6113 -p4000:4000 d2proxy
+```
 
-1. Press `Ctrl+R`
+Both commands accepts appending an optional gateway to the end of the arguments if the desired realm is not ```europe.battle.net```.
+
+#### Connecting to the proxy
+Open ```HKEY_CURRENT_USER\SOFTWARE\Battle.net\Configuration``` in ```regedit``` and append the following lines to ```Diablo II Battle.net gateways```:
+
+```
+<proxy_ip>
+-1
+d2proxy
+```
+
+where ```<proxy_ip>``` needs to be replaced with the real IP. (Note that ```d2proxy``` can also be replaced with a more suitable name.) With this approach the proxy can simply be selected under "Gateway" in the main menu.
+
+Alternatively, you can modity the hosts file to redirect the usual gateway to the proxy:
+
+1. Press `Windows+R`
 2. Paste in `notepad C:\WINDOWS\system32\drivers\etc\hosts`
 3. Add `<proxy_ip> europe.battle.net` to the bottom of the file where `<proxy_ip>` is the proxy's IP.
 
