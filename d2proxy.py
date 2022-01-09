@@ -4,7 +4,8 @@
 #     MIT license
 #
 
-import urllib2
+from urllib.request import urlopen
+from functools import reduce
 import socket
 import select
 import struct
@@ -78,7 +79,7 @@ class D2Proxy(object):
 
 		# SID_LOGONREALMEX - Redirect realm ip:port to proxy.
 		def redir_realm(sock, d):
-			if not d.startswith("\xff\x3e"): # Other packet.
+			if not d.startswith(b"\xff\x3e"): # Other packet.
 				return d
 			self.next_remote["realm"] = \
 				socket.inet_ntoa(d[20:24]), \
@@ -89,9 +90,9 @@ class D2Proxy(object):
 
 		# MCP_JOINGAME - Redirect game ip to proxy.
 		def redir_game(sock, d):
-			if not d.startswith("\x15\0\x04"): # Other packet.
+			if not d.startswith(b"\x15\0\x04"): # Other packet.
 				return d
-			if d[17:21] != "\0\0\0\0": # Failed to join game.
+			if d[17:21] != b"\0\0\0\0": # Failed to join game.
 				return d
 			self.next_remote["game"] = \
 				socket.inet_ntoa(d[9:13]), \
@@ -107,7 +108,7 @@ class D2Proxy(object):
 
 	@staticmethod
 	def log(line):
-		print time.strftime("[%H:%M:%S] ", time.localtime()) + line
+		print(time.strftime("[%H:%M:%S] ", time.localtime()) + line)
 
 	def new_socket(self, sock=None):
 		if sock is None:
@@ -169,12 +170,13 @@ class D2Proxy(object):
 
 if __name__ == "__main__":
 	remote = sys.argv[1] if len(sys.argv) > 1 else "europe.battle.net"
-	public = urllib2.urlopen(public_ip_url).read()
+	resource = urlopen(public_ip_url)
+	public = resource.read().decode(resource.headers.get_content_charset())
 
-	print "Usage        : %s [battle.net address]" % sys.argv[0]
-	print "Remote       : %s" % remote
-	print "Proxy public : %s" % public
-	print
+	print("Usage        : %s [battle.net address]" % sys.argv[0])
+	print("Remote       : %s" % remote)
+	print("Proxy public : %s" % public)
+	print()
 
 	p = D2Proxy(remote, public)
 	p.run()
